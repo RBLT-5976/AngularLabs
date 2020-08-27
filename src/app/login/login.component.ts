@@ -1,43 +1,37 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
+import { FormsModule } from "@angular/forms";
+import { AuthService } from "../auth.service";
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  selector: "app-login",
+  templateUrl: "./login.component.html",
+  styleUrls: ["./login.component.css"]
 })
 export class LoginComponent implements OnInit {
+  username: string = ""; //"Email Address";
+  password: string = "";
 
-  users = [{ 'email': 'abc@com.au', 'pwd': '123' }, 
-  { 'email': 'abd@com.au', 'pwd': '123' }, 
-  { 'email': 'abe@com.au', 'pwd': '123' }];
-  
+  constructor(
+    private router: Router,
+    private form: FormsModule,
+    private authservice: AuthService
+  ) {}
 
-  email:string;
-  password:string;
-  showmessage = false;
-  hidemessage = true;
-
-  constructor(private router: Router, private form: FormsModule) { }
-
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   itemClicked() {
-    console.log('aaa');
-    var match = false;
-    for (let i = 0; i < this.users.length; i++) {
-      if (this.email == this.users[i].email && this.password == this.users[i].pwd) {
-        // this.router.navigateByUrl('/account/'+ this.email);
-        this.router.navigateByUrl('/account');
-        match = true;
-      }
-    }
-  
-    if (!match) {
-      this.showmessage = true;
-      this.hidemessage = false;
-    }
+    console.log(this.username);
+    this.authservice.auth(this.username, this.password).subscribe(data => {
+      sessionStorage.setItem("user", JSON.stringify(data));
+      console.log(data);
+
+      this.router.navigateByUrl('/account/' + encodeURIComponent(JSON.stringify(data)));
+      //if (data.valid) {
+        //this.router.navigateByUrl("/account/" + this.username);
+      //}
+
+      // console.log(data);
+    });
   }
 }
